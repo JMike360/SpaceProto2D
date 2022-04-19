@@ -1,0 +1,56 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://Planet.tscn" type="PackedScene" id=1]
+[ext_resource path="res://main.gd" type="Script" id=2]
+[ext_resource path="res://MainCamera.gd" type="Script" id=3]
+[ext_resource path="res://assets/teahub.io-free-space-wallpaper-1348916.jpg" type="Texture" id=4]
+[ext_resource path="res://SolarSystem.gd" type="Script" id=5]
+[ext_resource path="res://Rocket.tscn" type="PackedScene" id=6]
+[ext_resource path="res://Rocket.gd" type="Script" id=7]
+
+[node name="main" type="Node2D"]
+script = ExtResource( 2 )
+
+[node name="Teahubio-free-space-wallpaper-1348916" type="Sprite" parent="."]
+position = Vector2( 605, 369 )
+texture = ExtResource( 4 )
+
+[node name="MainCamera" type="Camera2D" parent="."]
+position = Vector2( 508, 298 )
+rotating = true
+current = true
+script = ExtResource( 3 )
+
+[node name="SolarSystem" type="Node2D" parent="."]
+script = ExtResource( 5 )
+
+[node name="Planet" parent="SolarSystem" instance=ExtResource( 1 )]
+mass = 0.00102041
+speed = 0.2
+anchor = Vector2( 500, 350 )
+color = Color( 0.235294, 0.682353, 0.0745098, 1 )
+
+[node name="Planet2" parent="SolarSystem" instance=ExtResource( 1 )]
+mass = 0.00102041
+radius = 280
+speed = 0.5
+anchor = Vector2( 500, 350 )
+color = Color( 0.0156863, 0.105882, 0.701961, 1 )
+
+[node name="Sun" parent="SolarSystem" instance=ExtResource( 1 )]
+radius = 0
+speed = 0.0
+anchor = Vector2( 500, 350 )
+color = Color( 0.666667, 0.709804, 0.156863, 1 )
+gravMass = 900000000000000
+
+[node name="Planet3" parent="SolarSystem" instance=ExtResource( 1 )]
+radius = 200
+speed = 0.3
+anchor = Vector2( 500, 350 )
+color = Color( 0, 1, 0.976471, 1 )
+
+[node name="Rocket" parent="." instance=ExtResource( 6 )]
+position = Vector2( 364, 318 )
+script = ExtResource( 7 )
+speed = 1000

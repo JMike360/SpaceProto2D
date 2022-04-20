@@ -26,13 +26,14 @@ script = ExtResource( 5 )
 
 [node name="Planet" parent="SolarSystem" instance=ExtResource( 1 )]
 mass = 0.00102041
+radius = 200
 speed = 0.2
 anchor = Vector2( 500, 350 )
 color = Color( 0.235294, 0.682353, 0.0745098, 1 )
 
 [node name="Planet2" parent="SolarSystem" instance=ExtResource( 1 )]
 mass = 0.00102041
-radius = 280
+radius = 560
 speed = 0.5
 anchor = Vector2( 500, 350 )
 color = Color( 0.0156863, 0.105882, 0.701961, 1 )
@@ -45,7 +46,7 @@ color = Color( 0.666667, 0.709804, 0.156863, 1 )
 gravMass = 900000000000000
 
 [node name="Planet3" parent="SolarSystem" instance=ExtResource( 1 )]
-radius = 200
+radius = 400
 speed = 0.3
 anchor = Vector2( 500, 350 )
 color = Color( 0, 1, 0.976471, 1 )
@@ -53,4 +54,8 @@ color = Color( 0, 1, 0.976471, 1 )
 [node name="Rocket" parent="." instance=ExtResource( 6 )]
 position = Vector2( 364, 318 )
 script = ExtResource( 7 )
-speed = 1000
+speed = 2000
+
+[connection signal="area_entered" from="Rocket" to="Rocket" method="_on_Rocket_area_entered"]
+[connection signal="area_exited" from="Rocket" to="Rocket" method="_on_Rocket_area_exited"]
+[connection signal="body_entered" from="Rocket" to="Rocket" method="_on_Rocket_body_entered"]

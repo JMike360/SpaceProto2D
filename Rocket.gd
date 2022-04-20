@@ -9,6 +9,7 @@ export var speed = 10
 export var rotSpeed = 1
 var anchors = []
 var velocity = Vector2(0,0)
+var orbitAnchor
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass # Replace with function body.
@@ -31,7 +32,14 @@ func calc_net_force(var boosting):
 func setAnchors(_anchors):
 	anchors = _anchors
 # Called every frame. 'delta' is the elapsed time since the previous frame.
+
+var shouldOrbit = false 
+var t = 0
+var radius = 50
+var orbitSpeed = 1
+
 func _process(delta):
+	t += delta*orbitSpeed
 	var boosting = false
 	if(Input.is_action_pressed("ui_accept")):
 		boosting = true
@@ -42,10 +50,35 @@ func _process(delta):
 		rotation += rotSpeed * delta
 	
 	$AnimatedSprite.set_animation("firing" if boosting else "default")
-	
+	if not boosting and shouldOrbit:		
+		position = orbitAnchor.position + Vector2(radius*cos(t), radius*sin(t))
+		
 	var force = calc_net_force(boosting)
 	velocity += (force / gravMass) * delta
 	position += velocity * delta
 	
 	
 	
+	
+
+
+func _on_Rocket_area_entered(area):
+	print("Area entered by: ", area)
+	for a in anchors:
+		if(a.get_node("OrbitalRange") == area):
+			orbitAnchor = a
+			print("Found planet to orbit")
+			shouldOrbit = true
+
+
+
+func _on_Rocket_body_entered(body):
+	print("Collided with: ", body)
+	pass # Replace with function body.
+
+
+func _on_Rocket_area_exited(area):
+	print("Leaving area: ", area)
+	if orbitAnchor.get_node("OrbitalRange") == area:
+		shouldOrbit = false
+	pass # Replace with function body.

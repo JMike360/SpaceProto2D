@@ -9,6 +9,7 @@ export var speed = 1.0
 export var anchor = Vector2(0,0)
 export var color = Color(0,0,0)
 export var gravMass = 500000000000000
+export var orbitRange = 100
 
 var t = 0
 

@@ -6,10 +6,11 @@ extends Area2D
 # var b = "text"
 export var gravMass = 100
 export var speed = 10
-export var rotSpeed = 1
+export var rotSpeed = 1.3
 var anchors = []
 var velocity = Vector2(0,0)
 var orbitAnchor
+var prevPos = Vector2(0,0)
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass # Replace with function body.
@@ -51,13 +52,27 @@ func _process(delta):
 	
 	$AnimatedSprite.set_animation("firing" if boosting else "default")
 	if not boosting and shouldOrbit:		
-		position = orbitAnchor.position + Vector2(radius*cos(t), radius*sin(t))
-		
-	var force = calc_net_force(boosting)
-	velocity += (force / gravMass) * delta
-	position += velocity * delta
+		position = lerp(position, orbitAnchor.position + Vector2(radius*cos(t), radius*sin(t)), clamp(abs(0.05*t), 0, 1.0))
+		velocity = (position - prevPos) / (delta*orbitSpeed)
+		prevPos = position
+	else:
+		var force = calc_net_force(boosting)
+		velocity += (force / gravMass) * delta
+		position += velocity * delta
 	
 	
+func calc_t0():
+	var vOrbitAnchorToRocket = position - orbitAnchor.position 
+	var simpleAngle = atan(abs(vOrbitAnchorToRocket.y) / abs(vOrbitAnchorToRocket.x))
+	var angleAdjust = 0
+	if(vOrbitAnchorToRocket.x < 0 and vOrbitAnchorToRocket.y >= 0):
+		angleAdjust = PI/2
+	elif(vOrbitAnchorToRocket.x >= 0 and vOrbitAnchorToRocket.y < 0):
+		angleAdjust = -PI/2
+	elif(vOrbitAnchorToRocket.x <= 0 and vOrbitAnchorToRocket.y <= 0):
+		angleAdjust = PI
+	
+	return simpleAngle + angleAdjust
 	
 	
 
@@ -69,6 +84,8 @@ func _on_Rocket_area_entered(area):
 			orbitAnchor = a
 			print("Found planet to orbit")
 			shouldOrbit = true
+			t = calc_t0()
+			prevPos = position
 
 
 

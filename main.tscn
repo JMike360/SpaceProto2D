@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://Planet.tscn" type="PackedScene" id=1]
 [ext_resource path="res://main.gd" type="Script" id=2]
@@ -7,6 +7,7 @@
 [ext_resource path="res://SolarSystem.gd" type="Script" id=5]
 [ext_resource path="res://Rocket.tscn" type="PackedScene" id=6]
 [ext_resource path="res://Rocket.gd" type="Script" id=7]
+[ext_resource path="res://VelocityMeter.gd" type="Script" id=8]
 
 [node name="main" type="Node2D"]
 script = ExtResource( 2 )
@@ -30,6 +31,7 @@ radius = 200
 speed = 0.2
 anchor = Vector2( 500, 350 )
 color = Color( 0.235294, 0.682353, 0.0745098, 1 )
+orbitRange = 150
 
 [node name="Planet2" parent="SolarSystem" instance=ExtResource( 1 )]
 mass = 0.00102041
@@ -37,6 +39,7 @@ radius = 560
 speed = 0.5
 anchor = Vector2( 500, 350 )
 color = Color( 0.0156863, 0.105882, 0.701961, 1 )
+orbitRange = 150
 
 [node name="Sun" parent="SolarSystem" instance=ExtResource( 1 )]
 radius = 0
@@ -50,11 +53,24 @@ radius = 400
 speed = 0.3
 anchor = Vector2( 500, 350 )
 color = Color( 0, 1, 0.976471, 1 )
+orbitRange = 150
 
 [node name="Rocket" parent="." instance=ExtResource( 6 )]
 position = Vector2( 364, 318 )
 script = ExtResource( 7 )
-speed = 2000
+speed = 3000
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="VelocityMeter" type="Label" parent="CanvasLayer"]
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_left = 19.0
+margin_top = -48.0
+margin_right = 136.0
+margin_bottom = -25.0
+text = "Velocity: 0 m/s"
+script = ExtResource( 8 )
 
 [connection signal="area_entered" from="Rocket" to="Rocket" method="_on_Rocket_area_entered"]
 [connection signal="area_exited" from="Rocket" to="Rocket" method="_on_Rocket_area_exited"]

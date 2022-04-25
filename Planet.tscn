@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://Planet.gd" type="Script" id=1]
 
@@ -16,6 +16,15 @@ gradient = SubResource( 10 )
 
 [sub_resource type="CircleShape2D" id=1]
 radius = 20.0
+
+[sub_resource type="SphereMesh" id=12]
+
+[sub_resource type="Gradient" id=13]
+offsets = PoolRealArray( 0 )
+colors = PoolColorArray( 0, 0.627451, 0.627451, 0.235294 )
+
+[sub_resource type="GradientTexture" id=14]
+gradient = SubResource( 13 )
 
 [sub_resource type="SphereMesh" id=5]
 
@@ -45,6 +54,12 @@ texture = SubResource( 11 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource( 1 )
+
+[node name="EscapeMeter" type="MeshInstance2D" parent="."]
+position = Vector2( 1.90735e-06, 4.76837e-06 )
+scale = Vector2( 20, 20 )
+mesh = SubResource( 12 )
+texture = SubResource( 14 )
 
 [node name="MeshInstance2D" type="MeshInstance2D" parent="."]
 scale = Vector2( 20, 20 )

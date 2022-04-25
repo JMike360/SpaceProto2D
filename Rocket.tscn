@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://assets/rocket_noflame.png" type="Texture" id=1]
 [ext_resource path="res://assets/rocket.png" type="Texture" id=2]
+[ext_resource path="res://Rocket.gd" type="Script" id=3]
 
 [sub_resource type="CapsuleShape2D" id=1]
 radius = 5.0
@@ -21,6 +22,7 @@ animations = [ {
 } ]
 
 [node name="Rocket" type="Area2D"]
+script = ExtResource( 3 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource( 1 )
@@ -30,3 +32,8 @@ position = Vector2( 0, -1.19209e-07 )
 scale = Vector2( 0.05, 0.05 )
 frames = SubResource( 2 )
 animation = "firing"
+
+[node name="EndOrbitTimer" type="Timer" parent="."]
+wait_time = 0.4
+
+[connection signal="timeout" from="EndOrbitTimer" to="." method="_on_EndOrbitTimer_timeout"]

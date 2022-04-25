@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://Planet.tscn" type="PackedScene" id=1]
 [ext_resource path="res://main.gd" type="Script" id=2]
@@ -6,7 +6,6 @@
 [ext_resource path="res://assets/teahub.io-free-space-wallpaper-1348916.jpg" type="Texture" id=4]
 [ext_resource path="res://SolarSystem.gd" type="Script" id=5]
 [ext_resource path="res://Rocket.tscn" type="PackedScene" id=6]
-[ext_resource path="res://Rocket.gd" type="Script" id=7]
 [ext_resource path="res://VelocityMeter.gd" type="Script" id=8]
 
 [node name="main" type="Node2D"]
@@ -28,7 +27,7 @@ script = ExtResource( 5 )
 [node name="Planet" parent="SolarSystem" instance=ExtResource( 1 )]
 mass = 0.00102041
 radius = 200
-speed = 0.2
+speed = 0.8
 anchor = Vector2( 500, 350 )
 color = Color( 0.235294, 0.682353, 0.0745098, 1 )
 orbitRange = 150
@@ -36,7 +35,7 @@ orbitRange = 150
 [node name="Planet2" parent="SolarSystem" instance=ExtResource( 1 )]
 mass = 0.00102041
 radius = 560
-speed = 0.5
+speed = 0.15
 anchor = Vector2( 500, 350 )
 color = Color( 0.0156863, 0.105882, 0.701961, 1 )
 orbitRange = 150
@@ -57,8 +56,7 @@ orbitRange = 150
 
 [node name="Rocket" parent="." instance=ExtResource( 6 )]
 position = Vector2( 364, 318 )
-script = ExtResource( 7 )
-speed = 3000
+speed = 9000
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 

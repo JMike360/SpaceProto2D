@@ -10,9 +10,11 @@ export var anchor = Vector2(0,0)
 export var color = Color(0,0,0)
 export var gravMass = 500000000000000
 export var orbitRange = 100
+export var escapeVelocity = 200
 
 var t = 0
-
+var velocity
+var prevPos = Vector2(0,0)
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	($MeshInstance2D.texture as GradientTexture).gradient.colors[0] = color
@@ -27,6 +29,9 @@ func _ready():
 func _physics_process(delta):
 	t += delta*speed
 	position = Vector2(radius*cos(t), radius*sin(t)) + anchor
+	velocity = (position - prevPos) / delta
+	prevPos = position
+	#$EscapeMeter.scale = Vector2(clamp($EscapeMeter.scale.x*1.01, 1, 55) , clamp($EscapeMeter.scale.y*1.01, 1, 55))
 	#
 
 func getPosition():

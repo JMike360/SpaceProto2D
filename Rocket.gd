@@ -7,10 +7,16 @@ extends Area2D
 export var gravMass = 100
 export var speed = 10
 export var rotSpeed = 1.3
+export var spawnPos = Vector2(500, 500)
+export var f_enabled = true
+
 var anchors = []
 var velocity = Vector2(0,0)
 var orbitAnchor
 var prevPos = Vector2(0,0)
+var kf = 0.01
+var p = 1.225
+var A = 10
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass # Replace with function body.
@@ -26,8 +32,10 @@ func calc_net_force(var boosting):
 		var rsq = position.distance_squared_to(planet.position)
 		var fmag = G * (planet.gravMass * gravMass) /  rsq
 		fnet += fmag * position.direction_to(planet.position)
-	# print(fnet)
 		
+	if(f_enabled):
+		#Fd = 0.5 * p * v**2 * k * A
+		fnet += -0.5 * p * velocity.length_squared() * kf * A * velocity.normalized()
 	return fnet 
 	
 func setAnchors(_anchors):
@@ -38,6 +46,13 @@ var shouldOrbit = false
 var t = 0
 var radius = 50
 var orbitSpeed = 1
+var boostedOrbitSpeed := 1.0
+var bos_increment := 0.04 
+var bos_max := 8.0
+var bos_min := 1.0
+var ems_max = 55
+var orbitDir := 1
+var entryVel := Vector2(0,0)
 
 func _process(delta):
 	t += delta*orbitSpeed
@@ -51,15 +66,32 @@ func _process(delta):
 		rotation += rotSpeed * delta
 	
 	$AnimatedSprite.set_animation("firing" if boosting else "default")
-	if not boosting and shouldOrbit:		
-		position = lerp(position, orbitAnchor.position + Vector2(radius*cos(t), radius*sin(t)), clamp(abs(0.05*t), 0, 1.0))
+	if not boosting and shouldOrbit:
+		t = (t - delta*orbitSpeed) + boostedOrbitSpeed*delta	
+		position = lerp(position, orbitAnchor.position + Vector2(radius*cos(t*orbitDir), radius*sin(t*orbitDir)), 0.2)
 		velocity = (position - prevPos) / (delta*orbitSpeed)
 		prevPos = position
+		boostedOrbitSpeed = clamp(boostedOrbitSpeed - bos_increment, bos_min, bos_max)
+		var pEsc = clamp((orbitAnchor.velocity - velocity).length()/orbitAnchor.escapeVelocity, 0, 1)
+		orbitAnchor.get_node("EscapeMeter").scale = Vector2(pEsc * ems_max , pEsc * ems_max)
+	elif boosting and shouldOrbit:
+		t = (t - delta*orbitSpeed) + boostedOrbitSpeed*delta
+		position = lerp(position, orbitAnchor.position + Vector2(radius*cos(t*orbitDir), radius*sin(t*orbitDir)), 0.2)
+		velocity = (position - prevPos) / (delta*orbitSpeed)
+		prevPos = position		
+		boostedOrbitSpeed = clamp(boostedOrbitSpeed + bos_increment, bos_min, bos_max)
+		var pEsc = clamp((orbitAnchor.velocity - velocity).length()/orbitAnchor.escapeVelocity, 0, 1)
+		orbitAnchor.get_node("EscapeMeter").scale = Vector2(pEsc * ems_max, pEsc * ems_max)
 	else:
 		var force = calc_net_force(boosting)
 		velocity += (force / gravMass) * delta
-		position += velocity * delta
-	
+		position += velocity * delta	
+
+	if orbitAnchor:
+		if (orbitAnchor.velocity - velocity).length() > orbitAnchor.escapeVelocity:
+			print("Escape velocity exceeded...")
+			if $EndOrbitTimer.is_stopped():
+				$EndOrbitTimer.start()
 	
 func calc_t0():
 	var vOrbitAnchorToRocket = position - orbitAnchor.position 
@@ -75,17 +107,32 @@ func calc_t0():
 	return simpleAngle + angleAdjust
 	
 	
-
+func _input(event):
+	if event is InputEventKey:
+		if event.pressed and event.scancode == KEY_ESCAPE:
+			position = spawnPos
+			velocity = Vector2(0,0)
+			endOrbit()
 
 func _on_Rocket_area_entered(area):
 	print("Area entered by: ", area)
 	for a in anchors:
 		if(a.get_node("OrbitalRange") == area):
 			orbitAnchor = a
+			entryVel = velocity
 			print("Found planet to orbit")
 			shouldOrbit = true
 			t = calc_t0()
 			prevPos = position
+			
+			var relPos: Vector2 = orbitAnchor.position - position
+			var relVel: Vector2 = orbitAnchor.velocity - velocity
+			var angle = relPos.angle_to(relVel)
+
+			if angle < 0:
+				orbitDir = -1
+			else:
+				orbitDir = 1
 
 
 
@@ -93,9 +140,23 @@ func _on_Rocket_body_entered(body):
 	print("Collided with: ", body)
 	pass # Replace with function body.
 
+func endOrbit():
+	print("ending orbit")
+	shouldOrbit = false
+	orbitDir = 1
+	if(orbitAnchor):
+		orbitAnchor.get_node("EscapeMeter").scale = Vector2(1,1)
+		orbitAnchor = null
 
 func _on_Rocket_area_exited(area):
 	print("Leaving area: ", area)
-	if orbitAnchor.get_node("OrbitalRange") == area:
-		shouldOrbit = false
+	endOrbit()
 	pass # Replace with function body.
+
+func _on_EndOrbitTimer_timeout():
+	print("timeout called...")
+	if(orbitAnchor):
+		if (orbitAnchor.velocity - velocity).length() > orbitAnchor.escapeVelocity:
+			print("ending orbit...")
+			endOrbit()
+	$EndOrbitTimer.stop()

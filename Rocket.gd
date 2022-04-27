@@ -66,20 +66,15 @@ func _process(delta):
 		rotation += rotSpeed * delta
 	
 	$AnimatedSprite.set_animation("firing" if boosting else "default")
-	if not boosting and shouldOrbit:
-		t = (t - delta*orbitSpeed) + boostedOrbitSpeed*delta	
-		position = lerp(position, orbitAnchor.position + Vector2(radius*cos(t*orbitDir), radius*sin(t*orbitDir)), 0.2)
-		velocity = (position - prevPos) / (delta*orbitSpeed)
-		prevPos = position
-		boostedOrbitSpeed = clamp(boostedOrbitSpeed - bos_increment, bos_min, bos_max)
-		var pEsc = clamp((orbitAnchor.velocity - velocity).length()/orbitAnchor.escapeVelocity, 0, 1)
-		orbitAnchor.get_node("EscapeMeter").scale = Vector2(pEsc * ems_max , pEsc * ems_max)
-	elif boosting and shouldOrbit:
+	if shouldOrbit:
 		t = (t - delta*orbitSpeed) + boostedOrbitSpeed*delta
 		position = lerp(position, orbitAnchor.position + Vector2(radius*cos(t*orbitDir), radius*sin(t*orbitDir)), 0.2)
 		velocity = (position - prevPos) / (delta*orbitSpeed)
-		prevPos = position		
-		boostedOrbitSpeed = clamp(boostedOrbitSpeed + bos_increment, bos_min, bos_max)
+		prevPos = position
+		if boosting:
+			boostedOrbitSpeed = clamp(boostedOrbitSpeed + bos_increment, bos_min, bos_max)
+		else:
+			boostedOrbitSpeed = clamp(boostedOrbitSpeed - bos_increment, bos_min, bos_max)
 		var pEsc = clamp((orbitAnchor.velocity - velocity).length()/orbitAnchor.escapeVelocity, 0, 1)
 		orbitAnchor.get_node("EscapeMeter").scale = Vector2(pEsc * ems_max, pEsc * ems_max)
 	else:
